@@ -8,8 +8,9 @@
 #include <LGPS.h>
 
 #define SITE_URL "www.iitd.ac.in"
-#define WIFI_AP "********"           //Replace afterward
-#define WIFI_PWD "*********"         //Replace afterward
+#define WIFI_AP "test103"           //Replace afterward
+#define WIFI_PWD "alohomora"         //Replace afterward
+#define WIFI_AUTH LWIFI_WPA  // choose from LWIFI_OPEN, LWIFI_WPA, or LWIFI_WEP.
 
 LGPRSClient client;   //GPRS client
 LWiFiClient c;        //Wifi Client
@@ -19,16 +20,16 @@ void setup() {
   Serial.begin(9600);
   
  // GPRS Testing
- GPRS_test();
+ //GPRS_test();
 
  // WiFi testing
- WiFi_test();
+ //WiFi_test();
 
  // Bluetooth testing
  Blue_test();
 
  // GPS testing
- GPS_test();
+ //GPS_test();
 
 }
 
@@ -56,7 +57,7 @@ void WiFi_test()
 
  Serial.println();
  Serial.print("Connecting to Wifi...");
- if(LWiFi.connectWEP(WIFI_AP, WIFI_PWD) < 0)
+ if(0 == LWiFi.connect(WIFI_AP, LWiFiLoginInfo(WIFI_AUTH, WIFI_PWD)))
  {
  Serial.println("FAILED TO CONNECT!");
  return;
