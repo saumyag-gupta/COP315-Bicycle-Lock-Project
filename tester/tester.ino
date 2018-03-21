@@ -98,4 +98,24 @@ void GPRS_test()
 
 void loop() {
 
+  uint8_t buf[64];
+int bytesRead;
+if(LBTServer.connected())
+{
+// echo back all received data
+while(true)
+{
+bytesRead = LBTServer.readBytes(buf, 64);
+if(!bytesRead)
+break;
+Serial.write(buf, bytesRead);
+LBTServer.write(buf, bytesRead);
+}
+delay(100);
+}
+else
+{
+LBTServer.accept(5);
+}
+
 }
