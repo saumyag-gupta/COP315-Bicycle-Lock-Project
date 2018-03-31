@@ -1,17 +1,13 @@
-/*
-
- this example downloads the URL "http://arduino.cc/asciilogo.txt" and
- prints it to the Serial monitor.
-
- */
-
-
 #include <LGPRS.h>
 #include <LGPRSClient.h>
 #include <LGPRSServer.h>
 
-char server[] = "arduino.cc";
-char path[] = "/asciilogo.txt";
+//char server[] = "arduino.cc";
+//char path[] = "/asciilogo.txt";
+
+char server[] = "greens.org";
+char path[] = "/about/software/editor.txt";
+
 int port = 80; // HTTP
 
 LGPRSClient client;
