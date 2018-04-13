@@ -5,8 +5,8 @@
 //char server[] = "arduino.cc";
 //char path[] = "/asciilogo.txt";
 
-char server[] = "greens.org";
-char path[] = "/about/software/editor.txt";
+char server[] = "linkitonetest.000webhostapp.com";
+char path[] = "/server";
 
 int port = 80; // HTTP
 
@@ -30,8 +30,11 @@ void setup()
   {
     Serial.println("connected");
     // Make a HTTP request:
-    client.print("GET ");
-    client.print(path);
+    String str="GET /server.php?";
+    str += "command=";
+    str += "*CMDR,1,Lock1,000000000,L1,1,1498754874,20";
+    client.print(str);
+    Serial.println(str);
     client.println(" HTTP/1.1");
     client.print("Host: ");
     client.println(server);

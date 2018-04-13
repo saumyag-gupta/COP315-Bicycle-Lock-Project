@@ -1,58 +1,91 @@
+/* Start of Code */
+
 /*
-PINOUT:
-RC522 MODULE    Uno/Nano     MEGA
-SDA             D10          D9
-SCK             D13          D52
-MOSI            D11          D51
-MISO            D12          D50
-IRQ             N/A          N/A
-GND             GND          GND
-RST             D9           D8
-3.3V            3.3V         3.3V
+The MFRC522 Library used, was created by LJOS here: https://github.com/ljos/MFRC522 
+
 */
-/* Include the standard Arduino SPI library */
-#include <SPI.h>
-/* Include the RFID library */
-#include <RFID.h>
 
-/* Define the DIO used for the SDA (SS) and RST (reset) pins. */
-#define SDA_DIO 8
-#define RESET_DIO 9
-/* Create an instance of the RFID library */
-RFID RC522(SDA_DIO, RESET_DIO); 
+#include <MFRC522.h> // Include of the RC522 Library
+#include <SPI.h> // Used for communication via SPI with the Module
 
-void setup()
-{ 
-  Serial.begin(9600);
-  /* Enable the SPI interface */
-  SPI.begin(); 
-  /* Initialise the RFID reader */
-  RC522.init();
+#define SDAPIN 8 // RFID Module SDA Pin is connected to the UNO 10 Pin
+#define RESETPIN 9 // RFID Module RST Pin is connected to the UNO 8 Pin
+
+byte FoundTag; // Variable used to check if Tag was found
+byte ReadTag; // Variable used to store anti-collision value to read Tag information
+byte TagData[MAX_LEN]; // Variable used to store Full Tag Data
+byte TagSerialNumber[5]; // Variable used to store only Tag Serial Number
+byte GoodTagSerialNumber[5] = {0x95, 0xEB, 0x17, 0x53}; // The Tag Serial number we are looking for
+
+MFRC522 nfc(SDAPIN, RESETPIN); // Init of the library using the UNO pins declared above
+
+void setup() {
+SPI.begin();
+Serial.begin(115200);
+
+// Start to find an RFID Module
+Serial.println("Looking for RFID Reader");
+nfc.begin();
+byte version = nfc.getFirmwareVersion(); // Variable to store Firmware version of the Module
+
+// If can't find an RFID Module 
+if (! version) { 
+Serial.print("Didn't find RC522 board.");
+while(1); //Wait until a RFID Module is found
 }
 
-void loop()
-{
-  /* Has a card been detected? */
-  if (RC522.isCard())
-  {
-    /* If so then get its serial number */
-    RC522.readCardSerial();
-    Serial.println("Card detected:");
-    for(int i=0;i<5;i++)
-    {
-    Serial.print(RC522.serNum[i],DEC);
-    //Serial.print(RC522.serNum[i],HEX); //to print card detail in Hexa Decimal format
-    }
-    Serial.println();
-    Serial.println();
-  }
-  else
-  {
-    Serial.println("NO Card Detected");
-    Serial.println();
-    Serial.println();
-  }
-  delay(2000);
+// If found, print the information about the RFID Module
+Serial.print("Found chip RC522 ");
+Serial.print("Firmware version: 0x");
+Serial.println(version, HEX);
+Serial.println();
 }
 
+void loop() {
 
+String GoodTag="False"; // Variable used to confirm good Tag Detected
+
+// Check to see if a Tag was detected
+// If yes, then the variable FoundTag will contain "MI_OK"
+FoundTag = nfc.requestTag(MF1_REQIDL, TagData);
+
+if (FoundTag == MI_OK) {
+delay(200);
+
+// Get anti-collision value to properly read information from the Tag
+ReadTag = nfc.antiCollision(TagData);
+memcpy(TagSerialNumber, TagData, 4); // Write the Tag information in the TagSerialNumber variable
+
+Serial.println("Tag detected.");
+Serial.print("Serial Number: ");
+for (int i = 0; i < 4; i++) { // Loop to print serial number to serial monitor
+Serial.print(TagSerialNumber[i], HEX);
+Serial.print(", ");
+}
+Serial.println("");
+Serial.println();
+
+
+// Check if detected Tag has the right Serial number we are looking for 
+for(int i=0; i < 4; i++){
+if (GoodTagSerialNumber[i] != TagSerialNumber[i]) {
+break; // if not equal, then break out of the "for" loop
+}
+if (i == 3) { // if we made it to 4 loops then the Tag Serial numbers are matching
+GoodTag="TRUE";
+} 
+}
+if (GoodTag == "TRUE"){
+Serial.println("Success!!!!!!!");
+Serial.println();
+delay(1500);
+}
+else {
+Serial.println("TAG NOT ACCEPTED...... :(");
+Serial.println();
+delay(500); 
+}
+}
+}
+
+/* End of Code */
