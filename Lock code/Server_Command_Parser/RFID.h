@@ -123,7 +123,15 @@ const int NRSTPD = 5;
 #define     Reserved34        0x3F
 //-----------------------------------------------
 
-//4字节卡序列号，第5字节为校验字节
+String loop1();
+void Write_MFRC522(uchar addr, uchar val);
+uchar Read_MFRC522(uchar addr);
+void MFRC522_Init(void);
+uchar MFRC522_Request(uchar reqMode, uchar *TagType);
+uchar MFRC522_Anticoll(uchar *serNum);
+void MFRC522_Halt(void);
+uchar MFRC522_ToCard(uchar command, uchar *sendData, uchar sendLen, uchar *backData, uint *backLen);
+
 uchar serNum[5];
 
 uchar  writeData[16]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100};  //初始化 100元钱
@@ -143,8 +151,7 @@ uchar  moneyAdd = 10 ;  //充值10元
                                 {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xff,0x07,0x80,0x69, 0x19,0x33,0x07,0x15,0x34,0x14},
                                };
 
-void setup() {                
-   Serial.begin(9600);                       // RFID reader SOUT pin connected to Serial RX pin at 2400bps 
+void RFID_setup1() {                             // RFID reader SOUT pin connected to Serial RX pin at 2400bps 
  // start the SPI library:
   SPI.begin();
   
@@ -156,7 +163,7 @@ void setup() {
   MFRC522_Init();  
 }
 
-void loop()
+String loop1()
 {
     uchar i,tmp;
   uchar status;
@@ -180,10 +187,20 @@ void loop()
     //防冲撞，返回卡的序列号 4字节
     status = MFRC522_Anticoll(str);
     memcpy(serNum, str, 5);
+    String str_no="";
     if (status == MI_OK)
     {
-
-                        Serial.println("The card's number is  : ");
+       str_no+=(char)serNum[0];
+       str_no+=",";
+       str_no+=(char)serNum[1];
+       str_no+=",";
+       str_no+=(char)serNum[2];
+       str_no+=",";
+       str_no+=(char)serNum[3];
+       str_no+=",";
+       str_no+=(char)serNum[4];
+       return str_no;
+                       /* Serial.println("The card's number is  : ");
       Serial.print(serNum[0]);
                         Serial.print(" , ");
       Serial.print(serNum[1],BIN);
@@ -201,9 +218,13 @@ void loop()
                           Serial.println("Hello Grant");
                         } else if(serNum[0] == 173) {
                           Serial.println("Hello David");
-                        }
+                        }*/
                         delay(1000);
     }
+    else {
+      return str_no;
+    }
+    
                 //Serial.println(" ");
     MFRC522_Halt();     //命令卡片进入休眠状态              
           

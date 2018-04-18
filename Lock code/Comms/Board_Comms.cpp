@@ -12,7 +12,7 @@ int port = 80; // HTTP
 
 char command[100];
 
-NUM setup_(char server[],char path[])
+NUM Board_Comms::setup_(char server[],char path[])
 {
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
   {
@@ -37,7 +37,7 @@ NUM setup_(char server[],char path[])
   }
 }
 
-char *read_()
+char* Board_Comms:: read_()
 {
   NUM i=0;
   while (client.available())

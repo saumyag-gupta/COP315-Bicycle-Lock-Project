@@ -1,15 +1,12 @@
-#include "Board_Comms.h"
+#include "Lock.h"
 
-char server[] = "";
-char path[] = "";
-
-Board_comms comm1(server,path);
+Lock test;
 
 void setup() {
-  
+  Serial.begin(9600);
 
 }
 
 void loop() {
-
+   
 }

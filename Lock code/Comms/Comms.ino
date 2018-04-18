@@ -3,7 +3,7 @@
 char server[] = "";
 char path[] = "";
 
-Board_comms comm1(server,path);
+Board_Comms comm1(server,path);
 
 void setup() {
   
