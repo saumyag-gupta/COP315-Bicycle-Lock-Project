@@ -12,11 +12,8 @@ class Board_Comms{
 
    public:
 
-   Board_Comms(char serv[],char pat[])
+   Board_Comms()
    {
-    server=serv;
-    path=pat;
-    setup_(server,path);
    }
 
    int setup_(char serv[],char pat[]);

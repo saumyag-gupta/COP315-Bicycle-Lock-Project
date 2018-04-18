@@ -7,8 +7,6 @@ LGPRSClient client;
 
 int port = 80; // HTTP
 
-char command[100];
-
 int Board_Comms :: setup_(char server[],char path[])
 {
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
@@ -17,27 +15,28 @@ int Board_Comms :: setup_(char server[],char path[])
   }
   if (client.connect(server, port))
   {
-    return 0;
+    return 1;
   }
   else
   {
     // if you didn't get a connection to the server:
-    return 1;
+    return 0;
   }
 }
 
 char* Board_Comms :: read_()
 {
   int i=0;
+  String com = "";
   while (client.available())
   {
     char c = client.read();
-    command[i]=c;
+    com+=c;
     i++;
   }
 
   //client.stop();
-
+  char* command = (char*)com.c_str();
   return command;
 }
 
@@ -56,12 +55,12 @@ int Board_Comms :: write_(char command[])
     client.println(server);
     client.println("Connection: close");
     client.println();
-    return 0;
+    return 1;
   }
   else
   {
     // if you didn't get a connection to the server:
-    return 1;
+    return 0;
   }
 }
 

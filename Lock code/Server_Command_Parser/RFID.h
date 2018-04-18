@@ -190,15 +190,15 @@ String loop1()
     String str_no="";
     if (status == MI_OK)
     {
-       str_no+=(char)serNum[0];
-       str_no+=",";
-       str_no+=(char)serNum[1];
-       str_no+=",";
-       str_no+=(char)serNum[2];
-       str_no+=",";
-       str_no+=(char)serNum[3];
-       str_no+=",";
-       str_no+=(char)serNum[4];
+       str_no+=(int)serNum[0];
+       str_no+=".";
+       str_no+=(int)serNum[1];
+       str_no+=".";
+       str_no+=(int)serNum[2];
+       str_no+=".";
+       str_no+=(int)serNum[3];
+       str_no+=".";
+       str_no+=(int)serNum[4];
        return str_no;
                        /* Serial.println("The card's number is  : ");
       Serial.print(serNum[0]);

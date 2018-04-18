@@ -5,10 +5,10 @@
 #include "Command_parser.h"
 #include "Board_Comms.h"
 
-#define MOTOR 1
+#define MOTOR 4
 #define LED1 2
 #define LED2 3
-#define BUZZER 4
+#define BUZZER 8
 #define LIM_SWITCH1 6
 #define LIM_SWITCH2 7
 
@@ -16,17 +16,31 @@ class Lock{
   private:
   
   int STATUS;
+  int COMM_STATUS;
   char *USER,*IMEI,*DEV_CODE;
+  char *server;
+  char *path;
+
+  Board_Comms comm1;
 
   public:
 
   Lock()
   {
+
+  }
+
+  void INIT()
+  {
     STATUS=0;                      // status=0-> Locked   status=1->unlocked
+    COMM_STATUS=0;                 //comm_status=0-> Not connected to server   comm_status=1-> Connected to server
     IMEI = "863158022988725";
     DEV_CODE = "SG";
-    USER = "0,0,0,0,0";
-
+    USER = "0.0.0.0.0";
+ 
+    server = "";
+    path = "";
+    
     pinMode(MOTOR,OUTPUT);
     pinMode(LED1,OUTPUT);
     pinMode(LED2,OUTPUT);
@@ -34,11 +48,20 @@ class Lock{
     
     pinMode(LIM_SWITCH1,INPUT);
     pinMode(LIM_SWITCH2,INPUT);
-
+    
+    int i=0;
+    while(!(connect_server()))
+    {
+      i++;
+      if(i>5)break;
+    }
+    
     STATUS = get_lock_status();
   }
   
   int unlock();
+
+  int lock();
 
   int LED();
 
@@ -48,7 +71,7 @@ class Lock{
 
   int send_server(char command[]);
 
-  char* receive_server();
+  char* read_server();
 
   int get_lock_status();
 
