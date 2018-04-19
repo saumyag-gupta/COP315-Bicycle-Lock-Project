@@ -7,12 +7,27 @@
   delay(3000);
   digitalWrite(MOTOR,LOW);
   delay(3000);
+  Serial.println("Unlocked");
+  STATUS=1;   //Unlocked
+  
+  char* com = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+
+  String command(com);
+  command += "L0,";
+  command += STATUS;command += ",";
+  command += USER;command += ",";
+  command += TIME;command += ",";
+  command += "#<LF>";
+
+  char* pack = (char*)command.c_str();
+  
+  return send_server(pack);
 
   }
 
   int Lock :: lock()
   {
-    
+    STATUS = 0;  // Locked
   }
 
   
@@ -73,12 +88,22 @@
   int Lock :: RFID_read()
   {
     String s = loop1();
-    if(s != "" )
+    if( !(s.equals("")) && !(s.equals(USER)) )
     {
       USER = (char*)s.c_str();
       Serial.println(USER);
-      delay(1000);
-      return 1;
+      
+      char* com = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
+
+      String command(com);
+      command += "R0,";
+      command += USER;command += ",";
+      command += TIME;command += ",";
+      command += "#<LF>";
+
+      char* pack = (char*)command.c_str();
+  
+      return send_server(pack);
     }
     else
      return 0;
@@ -109,7 +134,7 @@
     str+="CMDR,";
     str+=DEV_CODE;str+=",";
     str+=IMEI;str+=",";
-    str+="001497689816";  //write code for returning time here
+    str+=TIME;  //write code for returning time here
     str+=",";
     char* com = (char*)str.c_str();
 

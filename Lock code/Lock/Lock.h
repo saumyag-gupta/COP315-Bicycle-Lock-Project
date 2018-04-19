@@ -17,7 +17,7 @@ class Lock{
   
   int STATUS;
   int COMM_STATUS;
-  char *USER,*IMEI,*DEV_CODE;
+  char *USER,*IMEI,*DEV_CODE,*TIME;
   char *server;
   char *path;
 
@@ -36,6 +36,7 @@ class Lock{
     COMM_STATUS=0;                 //comm_status=0-> Not connected to server   comm_status=1-> Connected to server
     IMEI = "863158022988725";
     DEV_CODE = "SG";
+    TIME = "1497689816";  //Default
     USER = "0.0.0.0.0";
  
     server = "";
@@ -53,7 +54,10 @@ class Lock{
     while(!(connect_server()))
     {
       i++;
-      if(i>5)break;
+      if(i>5){
+        Serial.println("Couldn't Connect");
+        break;
+      }
     }
     
     STATUS = get_lock_status();

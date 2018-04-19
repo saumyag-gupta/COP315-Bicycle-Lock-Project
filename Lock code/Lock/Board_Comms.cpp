@@ -26,13 +26,33 @@ int Board_Comms :: setup_(char server[],char path[])
 
 char* Board_Comms :: read_()
 {
-  int i=0;
+  int flag=0;
   String com = "";
   while (client.available())
   {
     char c = client.read();
-    com+=c;
-    i++;
+    if( c == 'C')
+     flag=1;
+    else if( c == 'M' && flag == 1)
+     flag=2;
+    else if( c == 'D' && flag == 2)
+     flag=3;
+    else if( c == 'S' && flag == 3)
+     flag=4;
+    else if( c == '#')
+     {
+      flag=0;
+      com+=c;
+      break;
+     }
+    else if( flag != 4 )
+     flag=0;
+     
+    if(flag >0)
+     com+=c;
+    else
+     com = "";
+    
   }
 
   //client.stop();
