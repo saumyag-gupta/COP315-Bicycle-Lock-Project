@@ -8,36 +8,32 @@
   digitalWrite(MOTOR,LOW);
   delay(3000);
   Serial.println("Unlocked");
-  STATUS=1;   //Unlocked
+  STATUS=0;   //Unlocked
   
-  char* com = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+  String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
 
-  String command(com);
   command += "L0,";
   command += STATUS;command += ",";
   command += USER;command += ",";
   command += TIME;command += ",";
   command += "#<LF>";
-
-  char* pack = (char*)command.c_str();
   
-  return send_server(pack);
+  return send_server(command);
 
   }
 
   int Lock :: lock()
   {
-    STATUS = 0;  // Locked
+    STATUS = 1;  // Locked
   }
 
   
   int Lock :: get_lock_status()
   {
     //Limit switches logic
-    Serial.print(digitalRead(LIM_SWITCH1));
-    Serial.print(" ");
-    Serial.println(digitalRead(LIM_SWITCH2));
-    return 0;
+    int switch1=digitalRead(LIM_SWITCH1));
+    int switch2=digitalRead(LIM_SWITCH2));
+    return 1;    //Locked
   }
 
   int Lock :: LED()
@@ -70,46 +66,46 @@
     }
   }
 
-  int Lock :: send_server(char command[])
+  int Lock :: send_server(String command)
   {
     return comm1.write_(command);
   }
 
-  char* Lock :: read_server()
+  String Lock :: read_server()
   {
     return comm1.read_();
   }
 
   void Lock :: RFID_setup()
   {
+    Serial.println("RFID setup");
     RFID_setup1();
   }
 
   int Lock :: RFID_read()
   {
+    //Serial.println("RFID read");
     String s = loop1();
-    if( !(s.equals("")) && !(s.equals(USER)) )
+    if( s != "" )
     {
       USER = (char*)s.c_str();
       Serial.println(USER);
+      delay(1000);
       
-      char* com = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
+      String command = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
 
-      String command(com);
       command += "R0,";
       command += USER;command += ",";
       command += TIME;command += ",";
       command += "#<LF>";
-
-      char* pack = (char*)command.c_str();
-  
-      return send_server(pack);
+      
+      return send_server(command);
     }
     else
      return 0;
   }
 
-  void Lock :: com_par(char command[])
+  void Lock :: com_par(String command)
   {
     Command_parser pars;
 
@@ -128,17 +124,16 @@
     
   }
 
-  char* Lock :: package_creator()
+  String Lock :: package_creator()
   {
-    String str="";
-    str+="CMDR,";
+    String str="*C";
+    str+="MDR,";
     str+=DEV_CODE;str+=",";
     str+=IMEI;str+=",";
     str+=TIME;  //write code for returning time here
     str+=",";
-    char* com = (char*)str.c_str();
 
-    return com;
+    return str;
   }
 
   char* Lock :: Local_time()

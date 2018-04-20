@@ -186,13 +186,13 @@ void loop()
                         Serial.println("The card's number is  : ");
       Serial.print(serNum[0]);
                         Serial.print(" , ");
-      Serial.print(serNum[1],BIN);
+      Serial.print(serNum[1]);
                         Serial.print(" , ");
-      Serial.print(serNum[2],BIN);
+      Serial.print(serNum[2]);
                         Serial.print(" , ");
-      Serial.print(serNum[3],BIN);
+      Serial.print(serNum[3]);
                         Serial.print(" , ");
-      Serial.print(serNum[4],BIN);
+      Serial.print(serNum[4]);
                         Serial.println(" ");
                         
                         // Should really check all pairs, but for now we'll just use the first

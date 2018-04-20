@@ -16,71 +16,71 @@ class Command_parser{
   //void W0();   // Alarmimg Command mlo 
   //void I0();   // Obtain SIM card ICCID Code Command*/
 
-int parser(char command[])
+int parser(String command)
 {
   char *IMEI,*Dev_code,*Time,*CMD,*valu1,*valu2,*valu3;
   int i=0;
   char *header="";
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    header+=command[i];
+    header+=command.charAt(i);
     i++;
   }
   if(header!="CMDS")
    return 1;
 
   i++;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    Dev_code+=command[i];
+    Dev_code+=command.charAt(i);
     i++;
   }
   
   i++;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    IMEI+=command[i];
+    IMEI+=command.charAt(i);
     i++;
   }
 
   i++;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    Time+=command[i];
+    Time+=command.charAt(i);
     i++;
   }
 
   i++;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    CMD+=command[i];
+    CMD+=command.charAt(i);
     i++;
   }
   
   i++;
-  if(command[i]=='#')
+  if(command.charAt(i)=='#')
    goto END;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    valu1+=command[i];
+    valu1+=command.charAt(i);
     i++;
   }
 
   i++;
-  if(command[i]=='#')
+  if(command.charAt(i)=='#')
    goto END;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    valu2+=command[i];
+    valu2+=command.charAt(i);
     i++;
   }
 
   i++;
-  if(command[i]=='#')
+  if(command.charAt(i)=='#')
    goto END;
-  while(command[i]!=',')
+  while(command.charAt(i)!=',')
   {
-    valu3+=command[i];
+    valu3+=command.charAt(i);
     i++;
   }
   
@@ -117,7 +117,6 @@ int Re_in()
 {
   return RESPONSE;
 }
-
 
 };
 

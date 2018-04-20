@@ -7,6 +7,7 @@ class Board_Comms{
    private:
    char *server;
    char *path;
+   int CONNECTED;
 
    int port = 80; // HTTP
 
@@ -18,9 +19,9 @@ class Board_Comms{
 
    int setup_(char serv[],char pat[]);
 
-   char *read_();
+   String read_();
 
-   int write_(char command[]);
+   int write_(String command);
 
 };
 

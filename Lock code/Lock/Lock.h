@@ -32,15 +32,15 @@ class Lock{
 
   void INIT()
   {
-    STATUS=0;                      // status=0-> Locked   status=1->unlocked
+    STATUS=1;                      // status=1-> Locked   status=0->unlocked
     COMM_STATUS=0;                 //comm_status=0-> Not connected to server   comm_status=1-> Connected to server
     IMEI = "863158022988725";
     DEV_CODE = "SG";
     TIME = "1497689816";  //Default
     USER = "0.0.0.0.0";
  
-    server = "";
-    path = "";
+    server = "linkitonetest.000webhostapp.com";
+    path = "/server";
     
     pinMode(MOTOR,OUTPUT);
     pinMode(LED1,OUTPUT);
@@ -50,7 +50,7 @@ class Lock{
     pinMode(LIM_SWITCH1,INPUT);
     pinMode(LIM_SWITCH2,INPUT);
     
-    int i=0;
+    /*int i=0;
     while(!(connect_server()))
     {
       i++;
@@ -58,7 +58,8 @@ class Lock{
         Serial.println("Couldn't Connect");
         break;
       }
-    }
+    }*/
+    connect_server();
     
     STATUS = get_lock_status();
   }
@@ -73,9 +74,9 @@ class Lock{
 
   int connect_server();
 
-  int send_server(char command[]);
+  int send_server(String command);
 
-  char* read_server();
+  String read_server();
 
   int get_lock_status();
 
@@ -83,9 +84,9 @@ class Lock{
 
   int RFID_read();
 
-  void com_par(char command[]);
+  void com_par(String command);
 
-  char* package_creator();
+  String package_creator();
 
   char* Local_time();
   

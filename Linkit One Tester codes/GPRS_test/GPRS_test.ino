@@ -32,7 +32,7 @@ void setup()
     // Make a HTTP request:
     String str="GET /server.php?";
     str += "command=";
-    str += "*CMDR,1,Lock1,000000000,L1,1,1498754874,20";
+    str += "CMDR,OM,863158022988725,1497689816,R0,246.104.222.116.52,1497689816,#<LF>";
     client.print(str);
     Serial.println(str);
     client.println(" HTTP/1.1");

@@ -15,22 +15,26 @@ int Board_Comms :: setup_(char server[],char path[])
   }
   if (client.connect(server, port))
   {
+    CONNECTED=1;
     return 1;
   }
   else
   {
+    CONNECTED=0;
     // if you didn't get a connection to the server:
     return 0;
   }
 }
 
-char* Board_Comms :: read_()
+String Board_Comms :: read_()
 {
   int flag=0;
   String com = "";
+  //Serial.println("Read");
   while (client.available())
   {
     char c = client.read();
+    Serial.print(c);
     if( c == 'C')
      flag=1;
     else if( c == 'M' && flag == 1)
@@ -56,14 +60,13 @@ char* Board_Comms :: read_()
   }
 
   //client.stop();
-  char* command = (char*)com.c_str();
-  return command;
+  return com;
 }
 
-int Board_Comms :: write_(char command[])
+int Board_Comms :: write_(String command)
 {
-  
-  if (client.connect(server, port))
+  Serial.println(command);
+  if(CONNECTED)
   {
     // Make a HTTP request:
     String str="GET /server.php?";
@@ -73,13 +76,14 @@ int Board_Comms :: write_(char command[])
     client.println(" HTTP/1.1");
     client.print("Host: ");
     client.println(server);
-    client.println("Connection: close");
+    //client.println("Connection: close");
     client.println();
+    Serial.println(str);
     return 1;
   }
   else
   {
-    // if you didn't get a connection to the server:
+    Serial.println("Didn't write");
     return 0;
   }
 }
