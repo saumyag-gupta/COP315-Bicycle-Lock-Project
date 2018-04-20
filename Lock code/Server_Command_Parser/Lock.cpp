@@ -1,7 +1,7 @@
 #include "Lock.h"
 #include "RFID.h"
 
-  int Lock :: unlock()
+  int Lock::unlock()
   {
   digitalWrite(MOTOR,HIGH);
   delay(3000);
@@ -25,13 +25,13 @@
 
   }
 
-  int Lock :: lock()
+  int Lock::lock()
   {
     STATUS = 0;  // Locked
   }
 
   
-  int Lock :: get_lock_status()
+  int Lock::get_lock_status()
   {
     //Limit switches logic
     Serial.print(digitalRead(LIM_SWITCH1));
@@ -40,12 +40,12 @@
     return 0;
   }
 
-  int Lock :: LED()
+  int Lock::LED()
   {
     
   }
 
-  int Lock :: buzzer()
+  int Lock::buzzer()
   {
     for(int i=0;i<3;i++)
     {
@@ -56,7 +56,7 @@
     }
   }
 
-  int Lock :: connect_server()
+  int Lock::connect_server()
   {
     if(comm1.setup_(server,path))
     {
@@ -70,22 +70,22 @@
     }
   }
 
-  int Lock :: send_server(char command[])
+  int Lock::send_server(char command[])
   {
     return comm1.write_(command);
   }
 
-  char* Lock :: read_server()
+  char* Lock::read_server()
   {
     return comm1.read_();
   }
 
-  void Lock :: RFID_setup()
+  void Lock::RFID_setup()
   {
     RFID_setup1();
   }
 
-  int Lock :: RFID_read()
+  int Lock::RFID_read()
   {
     String s = loop1();
     if( !(s.equals("")) && !(s.equals(USER)) )
@@ -109,7 +109,7 @@
      return 0;
   }
 
-  void Lock :: com_par(char command[])
+  void Lock::com_par(char command[])
   {
     Command_parser pars;
 
@@ -128,7 +128,7 @@
     
   }
 
-  char* Lock :: package_creator()
+  char* Lock::package_creator()
   {
     String str="";
     str+="CMDR,";
@@ -141,7 +141,7 @@
     return com;
   }
 
-  char* Lock :: Local_time()
+  char* Lock::Local_time()
   {
     
   }

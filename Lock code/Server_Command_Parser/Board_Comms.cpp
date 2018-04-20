@@ -1,13 +1,15 @@
 #include "Board_Comms.h"
-#include<stdlib.h>
+#include <stdlib.h>
 #include <LGPRS.h>
 #include <LGPRSClient.h>
+#include <LGPS.h>
 
 LGPRSClient client;
+gpsSentenceInfoStruct info;
 
 int port = 80; // HTTP
 
-int Board_Comms :: setup_(char server[],char path[])
+int Board_Comms::setup_(char server[],char path[])
 {
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
   {
@@ -24,7 +26,7 @@ int Board_Comms :: setup_(char server[],char path[])
   }
 }
 
-char* Board_Comms :: read_()
+char* Board_Comms::read_()
 {
   int flag=0;
   String com = "";
@@ -60,7 +62,7 @@ char* Board_Comms :: read_()
   return command;
 }
 
-int Board_Comms :: write_(char command[])
+int Board_Comms::write_(char command[])
 {
   
   if (client.connect(server, port))
@@ -82,5 +84,59 @@ int Board_Comms :: write_(char command[])
     // if you didn't get a connection to the server:
     return 0;
   }
+}
+
+const char *Board_Comms::nextToken(const char* src, char* buf)
+{
+   int i = 0;
+   while(src[i] != 0 && src[i] != ',')
+   i++;
+   if(buf)
+   {
+   strncpy(buf, src, i);
+   buf[i] = 0;
+   }
+   if(src[i])
+     i++;
+   return src+i;
+}
+
+void Board_Comms::update (const char* str, char* lati, char* longi)
+{
+  char latitude[20];
+  char longitude[20];
+  char buf[20];
+  const char* p = str;
+  p = nextToken(p, 0); // GGA
+  p = nextToken(p, 0); // Time
+  p = nextToken(p, latitude); // Latitude
+  p = nextToken(p, 0); // N
+  p = nextToken(p, longitude); // Longitude
+  lati=latitude;
+  longi=longitude;
+
+  if(buf[0] == '1') {
+    Serial.print("GPS is fixed:");
+    Serial.print(atoi(buf));
+    Serial.println(" satellite(s) found!");
+    Serial.print("Latitude:");
+    Serial.println(latitude);
+    Serial.print("Longitude:");
+    Serial.println(longitude);
+  }
+  else {
+    Serial.println("GPS is not fixed yet.");
+  }
+}
+
+void Board_Comms::read_gps (char* lati, char* longi)
+{
+  LGPS.powerOn();
+  delay(5000);
+  LGPS.getData(&info);
+  Board_Comms::update((char*)info.GPGGA);
+  delay(1000);
+  LGPS.powerOff();
+  delay(100);
 }
 
