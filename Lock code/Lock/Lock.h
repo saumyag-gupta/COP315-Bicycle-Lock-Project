@@ -15,11 +15,9 @@
 class Lock{
   private:
   
-  int STATUS;
+  int STATUS,RIDE_STATUS;
   int COMM_STATUS;
-  char *USER,*IMEI,*DEV_CODE,*TIME;
-  char *server;
-  char *path;
+  String USER,IMEI,DEV_CODE,TIME;
 
   Board_Comms comm1;
 
@@ -33,14 +31,12 @@ class Lock{
   void INIT()
   {
     STATUS=1;                      // status=1-> Locked   status=0->unlocked
+    RIDE_STATUS=0;                 //0-> Ride ended   1-> Ride Ongoing    2-> Ride Halted
     COMM_STATUS=0;                 //comm_status=0-> Not connected to server   comm_status=1-> Connected to server
     IMEI = "863158022988725";
-    DEV_CODE = "SG";
+    DEV_CODE = "OM";
     TIME = "1497689816";  //Default
     USER = "0.0.0.0.0";
- 
-    server = "linkitonetest.000webhostapp.com";
-    path = "/server";
     
     pinMode(MOTOR,OUTPUT);
     pinMode(LED1,OUTPUT);
@@ -49,17 +45,6 @@ class Lock{
     
     pinMode(LIM_SWITCH1,INPUT);
     pinMode(LIM_SWITCH2,INPUT);
-    
-    /*int i=0;
-    while(!(connect_server()))
-    {
-      i++;
-      if(i>5){
-        Serial.println("Couldn't Connect");
-        break;
-      }
-    }*/
-    connect_server();
     
     STATUS = get_lock_status();
   }
@@ -72,11 +57,7 @@ class Lock{
 
   int buzzer();
 
-  int connect_server();
-
-  int send_server(String command);
-
-  String read_server();
+  String send_server(String command);
 
   int get_lock_status();
 

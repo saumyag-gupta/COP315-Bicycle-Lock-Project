@@ -7,34 +7,52 @@ LGPRSClient client;
 
 int port = 80; // HTTP
 
-int Board_Comms :: setup_(char server[],char path[])
+String Board_Comms :: communicate(String command)
 {
+  Serial.println(command);
+
+  server = "linkitonetest.000webhostapp.com";
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
   {
     delay(500);
   }
+  // if you get a connection, report back via serial:
+  Serial.print("Connect to ");
+  Serial.println(server);
   if (client.connect(server, port))
   {
-    CONNECTED=1;
-    return 1;
+    Serial.println("connected");
+    // Make a HTTP request:
+    //client.print("GET ");
+    String str = "GET /server.php?";
+    str+="command=";
+    //str+="CMDR,01,Lock1,000,D0,0,255.32,2545.2";
+    str+=command;
+
+    client.print(str);
+    //client.print(path);
+    client.println(" HTTP/1.1");
+    client.print("Host: ");
+    client.println(server);
+    client.println("Connection: close");
+    client.println();
+    
+    Serial.println(str);
   }
   else
   {
-    CONNECTED=0;
     // if you didn't get a connection to the server:
-    return 0;
+    Serial.println("connection failed");
   }
-}
-
-String Board_Comms :: read_()
-{
+  String com="";command="";
   int flag=0;
-  String com = "";
-  //Serial.println("Read");
-  while (client.available())
+  while(1)
+  {
+      if (client.available())
   {
     char c = client.read();
-    Serial.print(c);
+    //Serial.print(c);
+           
     if( c == 'C')
      flag=1;
     else if( c == 'M' && flag == 1)
@@ -47,7 +65,7 @@ String Board_Comms :: read_()
      {
       flag=0;
       com+=c;
-      break;
+      command=com;
      }
     else if( flag != 4 )
      flag=0;
@@ -56,35 +74,21 @@ String Board_Comms :: read_()
      com+=c;
     else
      com = "";
-    
+     //com+=c;
   }
 
-  //client.stop();
-  return com;
-}
+  // if the server's disconnected, stop the client:
+  if (!client.available() && !client.connected())
+  {
+    Serial.println();
+    Serial.println("disconnecting.");
+    client.stop();
+    break;
 
-int Board_Comms :: write_(String command)
-{
+  }
+  }
   Serial.println(command);
-  if(CONNECTED)
-  {
-    // Make a HTTP request:
-    String str="GET /server.php?";
-    str += "command=";
-    str += command;
-    client.print(str);
-    client.println(" HTTP/1.1");
-    client.print("Host: ");
-    client.println(server);
-    //client.println("Connection: close");
-    client.println();
-    Serial.println(str);
-    return 1;
-  }
-  else
-  {
-    Serial.println("Didn't write");
-    return 0;
-  }
+  return command;
+ 
 }
 

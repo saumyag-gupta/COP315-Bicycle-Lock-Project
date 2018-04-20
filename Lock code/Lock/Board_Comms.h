@@ -17,11 +17,7 @@ class Board_Comms{
    {
    }
 
-   int setup_(char serv[],char pat[]);
-
-   String read_();
-
-   int write_(String command);
+   String communicate(String command);
 
 };
 

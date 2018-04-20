@@ -4,35 +4,48 @@
   int Lock :: unlock()
   {
   digitalWrite(MOTOR,HIGH);
-  delay(3000);
+  delay(1200);
   digitalWrite(MOTOR,LOW);
-  delay(3000);
   Serial.println("Unlocked");
   STATUS=0;   //Unlocked
+  RIDE_STATUS=1;   //Ride Started
   
   String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
 
   command += "L0,";
   command += STATUS;command += ",";
   command += USER;command += ",";
-  command += TIME;command += ",";
-  command += "#<LF>";
+  command += TIME;
   
-  return send_server(command);
+  String rec= send_server(command);
+  com_par(rec);
+  return 1;
 
   }
 
   int Lock :: lock()
   {
-    STATUS = 1;  // Locked
+  STATUS = 1;  // Locked
+  USER = "0.0.0.0.0";
+
+   //Halt Code
+  String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+
+  command += "L1,";
+  command += USER;command += ",";
+  command += TIME;
+  
+  String rec= send_server(command);
+  com_par(rec);
+  return 1;
   }
 
   
   int Lock :: get_lock_status()
   {
     //Limit switches logic
-    int switch1=digitalRead(LIM_SWITCH1));
-    int switch2=digitalRead(LIM_SWITCH2));
+    int switch1=digitalRead(LIM_SWITCH1);
+    int switch2=digitalRead(LIM_SWITCH2);
     return 1;    //Locked
   }
 
@@ -52,28 +65,9 @@
     }
   }
 
-  int Lock :: connect_server()
+  String Lock :: send_server(String command)
   {
-    if(comm1.setup_(server,path))
-    {
-      Serial.println("Connected to Server");
-      return 1;
-    }
-    else
-    {
-      Serial.println("Not Connected to Server...Retrying...");
-      return 0;
-    }
-  }
-
-  int Lock :: send_server(String command)
-  {
-    return comm1.write_(command);
-  }
-
-  String Lock :: read_server()
-  {
-    return comm1.read_();
+    return comm1.communicate(command);
   }
 
   void Lock :: RFID_setup()
@@ -95,11 +89,15 @@
       String command = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
 
       command += "R0,";
+      command += "0,";
       command += USER;command += ",";
-      command += TIME;command += ",";
-      command += "#<LF>";
+      command += TIME;
       
-      return send_server(command);
+      String rec= send_server(command);
+      Serial.println(rec);
+      Serial.println("Going into parser");
+      com_par(rec);
+      return 1;
     }
     else
      return 0;
@@ -108,10 +106,15 @@
   void Lock :: com_par(String command)
   {
     Command_parser pars;
+    Serial.println(command);
+    Serial.println("Parsing command");
 
-    switch(pars.parser(command))
+    int check=pars.parser(command);
+    
+    switch(check)
     {
       case UNLOCK:
+      Serial.println("Going into Unlock");
       unlock();
       break;
       case GPS_LOC:
@@ -119,6 +122,7 @@
       case BAT_STAT:
       break;
       case RESPONSE:
+      Serial.println("Server Response has been recorded");
       break;
     }
     
@@ -126,7 +130,7 @@
 
   String Lock :: package_creator()
   {
-    String str="*C";
+    String str="C";
     str+="MDR,";
     str+=DEV_CODE;str+=",";
     str+=IMEI;str+=",";

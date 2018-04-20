@@ -18,9 +18,11 @@ class Command_parser{
 
 int parser(String command)
 {
-  char *IMEI,*Dev_code,*Time,*CMD,*valu1,*valu2,*valu3;
+  Serial.println("Inside Parser");
+  Serial.println(command);
+  String IMEI="",Dev_code="",Time="",CMD="",valu1="",valu2="",valu3="";
   int i=0;
-  char *header="";
+  String header="";
   while(command.charAt(i)!=',')
   {
     header+=command.charAt(i);
