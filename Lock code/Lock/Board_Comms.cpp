@@ -2,8 +2,10 @@
 #include<stdlib.h>
 #include <LGPRS.h>
 #include <LGPRSClient.h>
+#include <LGPS.h>
 
 LGPRSClient client;
+gpsSentenceInfoStruct info;
 
 int port = 80; // HTTP
 
@@ -90,5 +92,61 @@ String Board_Comms :: communicate(String command)
   Serial.println(command);
   return command;
  
+}
+
+const char *Board_Comms::nextToken(const char* src, char* buf)
+{
+   int i = 0;
+   while(src[i] != 0 && src[i] != ',')
+   i++;
+   if(buf)
+   {
+   strncpy(buf, src, i);
+   buf[i] = 0;
+   }
+   if(src[i])
+     i++;
+   return src+i;
+}
+
+void Board_Comms::update (const char* str, char* lati, char* longi)
+{
+  char latitude[20];
+  char longitude[20];
+  char buf[20];
+  const char* p = str;
+  p = nextToken(p, 0); // GGA
+  p = nextToken(p, 0); // Time
+  p = nextToken(p, latitude); // Latitude
+  p = nextToken(p, 0); // N
+  p = nextToken(p, longitude); // Longitude
+  p = nextToken(p,0);
+  p = nextToken(p,buf);
+  lati=latitude;
+  longi=longitude;
+  Serial.println(buf[0]);
+  if(buf[0] == '1') {
+    Serial.print("GPS is fixed:");
+    Serial.print(atoi(buf));
+    Serial.println(" satellite(s) found!");
+    Serial.print("Latitude:");
+    Serial.println(latitude);
+    Serial.print("Longitude:");
+    Serial.println(longitude);
+  }
+  else {
+    Serial.println("GPS is not fixed yet.");
+  }
+}
+
+void Board_Comms::read_gps (char* lati, char* longi)
+{ 
+  LGPS.powerOn();
+  delay(5000);
+  LGPS.getData(&info);
+  update((char*)info.GPGGA, lati,longi);
+  delay(1000);
+  LGPS.powerOff();
+  delay(100);
 }
 

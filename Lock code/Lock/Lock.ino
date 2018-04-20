@@ -6,12 +6,12 @@ void setup() {
   
   Serial.begin(9600);
   test.INIT();
-  test.RFID_setup();
+  //test.RFID_setup();
   //digitalWrite(MOTOR,HIGH);
 }
 
 void loop() {
-   
-   test.RFID_read();
+   test.get_gps();
+   //test.RFID_read();
 
 }

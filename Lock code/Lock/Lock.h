@@ -18,6 +18,7 @@ class Lock{
   int STATUS,RIDE_STATUS;
   int COMM_STATUS;
   String USER,IMEI,DEV_CODE,TIME;
+  char* LAT,*LONG;
 
   Board_Comms comm1;
 
@@ -37,7 +38,9 @@ class Lock{
     DEV_CODE = "OM";
     TIME = "1497689816";  //Default
     USER = "0.0.0.0.0";
-    
+    LAT="0.000000";
+    LONG="0.000000";
+        
     pinMode(MOTOR,OUTPUT);
     pinMode(LED1,OUTPUT);
     pinMode(LED2,OUTPUT);
@@ -69,7 +72,11 @@ class Lock{
 
   String package_creator();
 
-  char* Local_time();
+  String Local_time();
+
+  int bat_stat();
+
+  void get_gps();
   
 };
 

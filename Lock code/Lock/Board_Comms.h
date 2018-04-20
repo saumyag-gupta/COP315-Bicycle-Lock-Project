@@ -19,5 +19,11 @@ class Board_Comms{
 
    String communicate(String command);
 
+   const char *nextToken(const char* src, char* buf);
+
+   void update(const char* str, char* lati, char* longi);
+
+   void read_gps(char* lati, char* longi);
+
 };
 

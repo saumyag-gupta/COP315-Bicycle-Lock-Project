@@ -1,3 +1,4 @@
+#include <LBattery.h>
 #include "Lock.h"
 #include "RFID.h"
 
@@ -88,10 +89,14 @@
       
       String command = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
 
-      command += "R0,";
+      /*command += "R0,";
       command += "0,";
       command += USER;command += ",";
-      command += TIME;
+      command += TIME;*/
+      command += "L1" ;
+      command += USER;command += ",";
+      command += TIME;command += ",";
+      command += "20";
       
       String rec= send_server(command);
       Serial.println(rec);
@@ -120,6 +125,8 @@
       case GPS_LOC:
       break;
       case BAT_STAT:
+      Serial.println("Going into batstat");
+      bat_stat();
       break;
       case RESPONSE:
       Serial.println("Server Response has been recorded");
@@ -140,8 +147,32 @@
     return str;
   }
 
-  char* Lock :: Local_time()
+  String Lock :: Local_time()
   {
     
+  }
+
+  int Lock :: bat_stat()
+  {
+    int stat = LBattery.level();
+
+    String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+
+    command += "S5,";
+    command += stat;command += ",";
+    command += "31";command += ",";
+    command += "0,";
+    command += STATUS;command+=",";
+    command += "0";
+  
+    String rec= send_server(command);
+    com_par(rec);
+    return 1;
+    
+  }
+
+  void Lock :: get_gps()
+  {
+    comm1.read_gps(LAT,LONG);
   }
 
