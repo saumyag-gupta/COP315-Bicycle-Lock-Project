@@ -1,4 +1,4 @@
-#include<stdlib.h>
+#include <stdlib.h>
 #include <LGPRS.h>
 #include <LGPRSClient.h>
 
@@ -14,6 +14,7 @@ class Board_Comms{
 
    Board_Comms()
    {
+
    }
 
    int setup_(char serv[],char pat[]);
@@ -21,6 +22,8 @@ class Board_Comms{
    char *read_();
 
    int write_(char command[]);
+
+   void read_gps(char* lati, char* longi);
 
 };
 

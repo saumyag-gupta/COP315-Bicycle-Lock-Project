@@ -1,5 +1,5 @@
 #include "Board_Comms.h"
-#include<stdlib.h>
+#include <stdlib.h>
 #include <LGPRS.h>
 #include <LGPRSClient.h>
 
@@ -7,7 +7,7 @@ LGPRSClient client;
 
 int port = 80; // HTTP
 
-int Board_Comms :: setup_(char server[],char path[])
+int Board_Comms::setup_(char server[],char path[])
 {
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
   {
@@ -24,7 +24,7 @@ int Board_Comms :: setup_(char server[],char path[])
   }
 }
 
-char* Board_Comms :: read_()
+char* Board_Comms::read_()
 {
   int flag=0;
   String com = "";
@@ -60,7 +60,7 @@ char* Board_Comms :: read_()
   return command;
 }
 
-int Board_Comms :: write_(char command[])
+int Board_Comms::write_(char command[])
 {
   
   if (client.connect(server, port))
@@ -82,5 +82,36 @@ int Board_Comms :: write_(char command[])
     // if you didn't get a connection to the server:
     return 0;
   }
+}
+
+const char *nextToken(const char* src, char* buf)
+{
+   int i = 0;
+   while(src[i] != 0 && src[i] != ',')
+   i++;
+   if(buf)
+   {
+   strncpy(buf, src, i);
+   buf[i] = 0;
+   }
+   if(src[i])
+     i++;
+   return src+i;
+}
+
+void Board_Comms::read_gps (const char* str, char* lati, char* longi)
+{
+  LGPS.powerOn();
+   char latitude[20];
+   char longitude[20];
+   char buf[20];
+   const char* p = str;
+   p = nextToken(p, 0); // GGA
+   p = nextToken(p, 0); // Time
+   p = nextToken(p, latitude); // Latitude
+   p = nextToken(p, 0); // N
+   p = nextToken(p, longitude); // Longitude
+   lati=latitude;
+   longi=longitude;
 }
 
