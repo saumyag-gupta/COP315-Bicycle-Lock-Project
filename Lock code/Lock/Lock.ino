@@ -6,13 +6,13 @@ void setup() {
   
   Serial.begin(9600);
   test.INIT();
-  //test.RFID_setup();
+  test.RFID_setup();
 }
 
 void loop() {
-   
+  
+   test.RFID_read();
+   test.on_lock();
    //test.GPS_periodic();
-   //test.RFID_read();
-   //test.lock();
-   //test.LED();
+   test.LED();
 }

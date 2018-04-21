@@ -7,12 +7,11 @@
 #include<math.h>
 
 #define MOTOR 4
-#define RED 2
+#define RED 7
 #define ORANGE 3
 #define GREEN 9
 #define BUZZER 8
 #define LIM_SWITCH1 6
-#define LIM_SWITCH2 7
 
 class Lock{
   private:
@@ -56,7 +55,7 @@ class Lock{
     pinMode(BUZZER,OUTPUT);
     
     pinMode(LIM_SWITCH1,INPUT);
-    pinMode(LIM_SWITCH2,INPUT);
+//    pinMode(LIM_SWITCH2,INPUT);
     
     STATUS = get_lock_status();
     

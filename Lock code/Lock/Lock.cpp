@@ -37,15 +37,15 @@
       STATUS = 1;  // Locked
       uint32_t curr = millis();
       int flag=0;
-      
-      while((millis()-curr)<15000)  
+      Serial.println("Inside On Lock");
+      /*while((millis()-curr)<15000)  
       {
         if(RFID_read() != 0 )
         {
           flag=1;
           halt();
         }
-      }
+      }*/
       if(!flag)
        lock();
       return 1;  
@@ -65,7 +65,7 @@
     
        //Halt Code
       String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
-    
+      Serial.println("Locked");
       command += "L1,";
       command += USER;command += ",";
       command += TIME;command += ",";
@@ -83,7 +83,7 @@
   int Lock :: halt()
   {
       RIDE_STATUS=2;
-
+      Serial.println("Halted");
       String command = package_creator();  
       
       command += "L2,";
@@ -101,7 +101,7 @@
   {
     //Limit switches logic
     int switch1=digitalRead(LIM_SWITCH1);
-    int switch2=digitalRead(LIM_SWITCH2);
+  //  int switch2=digitalRead(LIM_SWITCH2);
     if(switch1 == LOW)
     return 1;    //Locked
     else
@@ -135,9 +135,9 @@
     for(int i=0;i<j;i++)
     {
       digitalWrite(BUZZER,HIGH);
-      delay(25);
+      delay(50);
       digitalWrite(BUZZER,LOW);
-      delay(25);
+      delay(50);
     }
   }
 
@@ -156,7 +156,7 @@
   {
     //Serial.println("RFID read");
     String s = loop1();
-    if( s != "" && s!=USER && RIDE_STATUS!= 2)
+    if( s != "" && s!=USER && RIDE_STATUS == 0)
     {
       USER = s;buzzer(2);
       Serial.println(USER);
