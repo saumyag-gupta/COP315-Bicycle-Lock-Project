@@ -108,19 +108,36 @@
      return 0;   //Unlocked
   }
 
-  int Lock :: LED()
+  void Lock :: LED()
   {
-    
+    if(RIDE_STATUS==0)                    //Ride Ended
+    {
+      digitalWrite(RED,HIGH);
+      digitalWrite(GREEN,LOW);
+      digitalWrite(ORANGE,LOW);
+    }
+    else if(RIDE_STATUS==1)              // Ongoing Ride
+    {
+      digitalWrite(RED,LOW);
+      digitalWrite(GREEN,HIGH);
+      digitalWrite(ORANGE,LOW);
+    }
+    else                                 //Ride Halted
+    {
+      digitalWrite(RED,LOW);
+      digitalWrite(GREEN,LOW);
+      digitalWrite(ORANGE,HIGH);
+    }
   }
 
-  int Lock :: buzzer()
+  void Lock :: buzzer(int j)
   {
-    for(int i=0;i<3;i++)
+    for(int i=0;i<j;i++)
     {
       digitalWrite(BUZZER,HIGH);
-      delay(100);
+      delay(25);
       digitalWrite(BUZZER,LOW);
-      delay(100);
+      delay(25);
     }
   }
 
@@ -141,7 +158,7 @@
     String s = loop1();
     if( s != "" && s!=USER && RIDE_STATUS!= 2)
     {
-      USER = s;
+      USER = s;buzzer(2);
       Serial.println(USER);
       delay(1000);
       
@@ -164,6 +181,7 @@
     }
     else if( s == USER && RIDE_STATUS==2)
     {
+      buzzer(2);
       unlock();
       return 1;
     }

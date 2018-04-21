@@ -7,8 +7,9 @@
 #include<math.h>
 
 #define MOTOR 4
-#define LED1 2
-#define LED2 3
+#define RED 2
+#define ORANGE 3
+#define GREEN 9
 #define BUZZER 8
 #define LIM_SWITCH1 6
 #define LIM_SWITCH2 7
@@ -49,8 +50,9 @@ class Lock{
     next_D0=period;
         
     pinMode(MOTOR,OUTPUT);
-    pinMode(LED1,OUTPUT);
-    pinMode(LED2,OUTPUT);
+    pinMode(RED,OUTPUT);
+    pinMode(ORANGE,OUTPUT);
+    pinMode(GREEN,OUTPUT);
     pinMode(BUZZER,OUTPUT);
     
     pinMode(LIM_SWITCH1,INPUT);
@@ -73,9 +75,9 @@ class Lock{
 
   int halt();
 
-  int LED();
+  void LED();
 
-  int buzzer();
+  void buzzer(int n);
 
   String send_server(String command);
 
