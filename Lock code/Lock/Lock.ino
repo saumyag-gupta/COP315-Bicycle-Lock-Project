@@ -11,7 +11,8 @@ void setup() {
 }
 
 void loop() {
-   test.get_gps();
-   //test.RFID_read();
-
+   
+    test.GPS_periodic();
+   test.RFID_read();
+   //test.lock();
 }

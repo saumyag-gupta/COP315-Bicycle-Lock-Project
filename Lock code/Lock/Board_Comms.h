@@ -21,9 +21,19 @@ class Board_Comms{
 
    const char *nextToken(const char* src, char* buf);
 
-   void update(const char* str, char* lati, char* longi);
+   String update(const char* str, char* lati, char* longi);
 
-   void read_gps(char* lati, char* longi);
+   String read_gps(char* lati, char* longi);
+
+   void convertCoords(double latitude, double longitude, double &lat_return, double &lon_return);
+
+   String parseGPGGA(const char* GPGGAstr, char *lati, char *longi);
+
+   static double getIntNumber(const char *s);
+
+   static double getDoubleNumber(const char *s);
+
+   static unsigned char getComma(unsigned char num,const char *str);
 
 };
 

@@ -8,6 +8,12 @@
   delay(1200);
   digitalWrite(MOTOR,LOW);
   Serial.println("Unlocked");
+
+    if(RIDE_STATUS != 2)
+  {
+     unlocking = millis();
+     locking = -1;
+  }
   STATUS=0;   //Unlocked
   RIDE_STATUS=1;   //Ride Started
   
@@ -24,21 +30,70 @@
 
   }
 
+  int Lock :: on_lock()
+  {
+    if(digitalRead(LIM_SWITCH1) == LOW && STATUS == 0) 
+    {
+      STATUS = 1;  // Locked
+      uint32_t curr = millis();
+      int flag=0;
+      
+      while((millis()-curr)<15000)  
+      {
+        if(RFID_read() != 0 )
+        {
+          flag=1;
+          halt();
+        }
+      }
+      if(!flag)
+       lock();
+      return 1;  
+      
+    }
+    else
+    {
+       return 0;
+    }
+  
+  }
+
   int Lock :: lock()
   {
-  STATUS = 1;  // Locked
-  USER = "0.0.0.0.0";
+       USER = "0.0.0.0.0";
+       RIDE_STATUS=0;
+    
+       //Halt Code
+      String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+    
+      command += "L1,";
+      command += USER;command += ",";
+      command += TIME;command += ",";
+      uint32_t ride=millis() - unlocking;
+      command += ride;
 
-   //Halt Code
-  String command = package_creator();             // Lock-> Server  UNLOCK STATUS COMMAND
+      unlocking = -1;
+      locking=millis();
+      
+      String rec= send_server(command);
+      com_par(rec);
+      return 1;
+  }
 
-  command += "L1,";
-  command += USER;command += ",";
-  command += TIME;
-  
-  String rec= send_server(command);
-  com_par(rec);
-  return 1;
+  int Lock :: halt()
+  {
+      RIDE_STATUS=2;
+
+      String command = package_creator();  
+      
+      command += "L2,";
+      command += USER;command += ",";
+      command += TIME;
+      
+      String rec= send_server(command);
+      com_par(rec);
+      return 1;    
+    
   }
 
   
@@ -47,7 +102,10 @@
     //Limit switches logic
     int switch1=digitalRead(LIM_SWITCH1);
     int switch2=digitalRead(LIM_SWITCH2);
+    if(switch1 == LOW)
     return 1;    //Locked
+    else
+     return 0;   //Unlocked
   }
 
   int Lock :: LED()
@@ -81,27 +139,32 @@
   {
     //Serial.println("RFID read");
     String s = loop1();
-    if( s != "" )
+    if( s != "" && s!=USER && RIDE_STATUS!= 2)
     {
-      USER = (char*)s.c_str();
+      USER = s;
       Serial.println(USER);
       delay(1000);
       
       String command = package_creator();             // Lock-> Server  RFID DETECTED COMMAND
 
-      /*command += "R0,";
+      command += "R0,";
       command += "0,";
       command += USER;command += ",";
-      command += TIME;*/
-      command += "L1" ;
+      command += TIME;
+     /* command += "L1" ;
       command += USER;command += ",";
       command += TIME;command += ",";
-      command += "20";
+      command += "20";*/
       
       String rec= send_server(command);
       Serial.println(rec);
       Serial.println("Going into parser");
       com_par(rec);
+      return 1;
+    }
+    else if( s == USER && RIDE_STATUS==2)
+    {
+      unlock();
       return 1;
     }
     else
@@ -123,6 +186,7 @@
       unlock();
       break;
       case GPS_LOC:
+      GPS_send(get_gps());
       break;
       case BAT_STAT:
       Serial.println("Going into batstat");
@@ -171,8 +235,31 @@
     
   }
 
-  void Lock :: get_gps()
+  String Lock :: get_gps()
   {
-    comm1.read_gps(LAT,LONG);
+    return comm1.read_gps(LAT,LONG);
+  }
+
+  int Lock :: GPS_send(String loc)
+  {
+    String command = package_creator();
+
+    command +="D0,";
+    command +="0,";
+    command +=loc;
+
+    String rec= send_server(command);
+    com_par(rec);
+    return 1;
+  }
+
+  int Lock :: GPS_periodic()
+  {     
+     //Timer function
+     if(millis()>next_D0)
+     {
+       next_D0 = millis() +period; 
+       GPS_send(get_gps());   //Send Current Location
+     }
   }
 
