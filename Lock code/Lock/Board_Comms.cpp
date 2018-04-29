@@ -16,9 +16,13 @@ String Board_Comms :: communicate(String command)
   Serial.println(command);
 
   server = "linkitonetest.000webhostapp.com";
+  uint32_t curr = millis();
   while (!LGPRS.attachGPRS("wholesale", NULL, NULL))
   {
     delay(500);
+    
+    if((millis() - curr)>10000)
+     break;
   }
   // if you get a connection, report back via serial:
   Serial.print("Connect to ");

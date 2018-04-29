@@ -1,9 +1,17 @@
-void setup() {
-  // put your setup code here, to run once:
 
+void setup()
+{
+  Serial.begin(9600);
+  uint32_t curr = millis();
+      while((millis()-curr)<30000)  
+      {
+        
+      Serial.println("Inside On Lock");
+      Serial.println(millis());
+      }
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-
+void loop()
+{
+      
 }

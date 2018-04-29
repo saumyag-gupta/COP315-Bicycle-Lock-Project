@@ -99,6 +99,8 @@ class Lock{
   int GPS_send(String loc);
 
   int GPS_periodic();
+
+  void err_buzzer(int j);
   
 };
 

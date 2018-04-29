@@ -38,14 +38,14 @@
       uint32_t curr = millis();
       int flag=0;
       Serial.println("Inside On Lock");
-      /*while((millis()-curr)<15000)  
+      while((millis()-curr)<15000)  
       {
         if(RFID_read() != 0 )
         {
           flag=1;
           halt();
         }
-      }*/
+      }
       if(!flag)
        lock();
       return 1;  
@@ -73,10 +73,12 @@
       command += ride;
 
       unlocking = -1;
+      locking=0;
       locking=millis();
       
       String rec= send_server(command);
       com_par(rec);
+   
       return 1;
   }
 
@@ -141,6 +143,17 @@
     }
   }
 
+  void Lock :: err_buzzer(int j)
+  {
+    for(int i=0;i<j;i++)
+    {
+      digitalWrite(BUZZER,HIGH);
+      delay(400);
+      digitalWrite(BUZZER,LOW);
+      delay(400);
+    }
+  }
+
   String Lock :: send_server(String command)
   {
     return comm1.communicate(command);
@@ -177,12 +190,18 @@
       Serial.println(rec);
       Serial.println("Going into parser");
       com_par(rec);
+      Serial.println("End of RFID");
       return 1;
     }
-    else if( s == USER && RIDE_STATUS==2)
+    else if( s != "" && s == USER && RIDE_STATUS==2)
     {
       buzzer(2);
       unlock();
+      return 1;
+    }
+    else if( s != "" && s == USER && STATUS == 1 && RIDE_STATUS==1)
+    {
+      buzzer(2);
       return 1;
     }
     else
@@ -194,7 +213,12 @@
     Command_parser pars;
     Serial.println(command);
     Serial.println("Parsing command");
-
+    if(command == "")
+    {
+      err_buzzer(1);
+    }
+    else
+    {
     int check=pars.parser(command);
     
     switch(check)
@@ -213,6 +237,7 @@
       case RESPONSE:
       Serial.println("Server Response has been recorded");
       break;
+    }
     }
     
   }
