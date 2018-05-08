@@ -1,13 +1,11 @@
 #include "Board_Comms.h"
-#include<stdlib.h>
-#include <LGPRS.h>
-#include <LGPRSClient.h>
-#include <LGPS.h>
 
 LGPRSClient client;
 gpsSentenceInfoStruct info;
 char buff[256];
 char gmaps_buff[50];
+
+GATTService serv;
 
 int port = 80; // HTTP
 
@@ -98,6 +96,23 @@ String Board_Comms :: communicate(String command)
   Serial.println(command);
   return command;
  
+}
+
+int Board_Comms::Start_BLE_Service()
+{
+  Serial.printf( "Starting GATT Server ......\n" );
+  if ( LGATTServer.begin(1, &serv) ) {
+    Serial.println( "GATT Server Started" );
+    return 1;
+  } else {
+    Serial.println( "Error Starting GATT Server" );
+    return 0;
+  }
+}
+
+void Board_Comms::BLE_handleevents()
+{
+  LGATTServer.handleEvents();
 }
 
 const char *Board_Comms::nextToken(const char* src, char* buf)

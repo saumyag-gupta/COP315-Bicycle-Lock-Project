@@ -1,6 +1,9 @@
 #include<stdlib.h>
 #include <LGPRS.h>
 #include <LGPRSClient.h>
+#include <LGPS.h>
+#include "GATTService.h"
+#include <LGATTUUID.h>
 
 class Board_Comms{
   
@@ -18,6 +21,10 @@ class Board_Comms{
    }
 
    String communicate(String command);
+
+   int Start_BLE_Service();
+
+   void BLE_handleevents();
 
    const char *nextToken(const char* src, char* buf);
 
